@@ -32,6 +32,10 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+assets/.env
+
+# Firebase config
+android/app/google-services.json
 
 # Symbolication related
 app.*.symbols
