@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firestore_storage_app/Utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,30 @@ class MySignUpPage extends StatefulWidget {
 class _MySignUpPageState extends State<MySignUpPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+      if (mounted) {
+        showSnackBar(context, Colors.green, "Account successfully created!");
+      }
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        showSnackBar(context, Colors.red, e.message!);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +87,11 @@ class _MySignUpPageState extends State<MySignUpPage> {
             Padding(
               padding: const EdgeInsets.only(left: 12.0, right: 12, bottom: 8),
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await createUserWithEmailAndPassword();
+                  emailController.clear();
+                  passwordController.clear();
+                },
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(double.infinity, 50),
                   backgroundColor: Colors.black,

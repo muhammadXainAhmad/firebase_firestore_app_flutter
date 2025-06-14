@@ -1,5 +1,4 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firestore_storage_app/Views/home.dart';
 import 'package:firestore_storage_app/Views/login.dart';
 import 'package:firestore_storage_app/Views/signup.dart';
 import 'package:firestore_storage_app/firebase_options.dart';
@@ -28,7 +27,7 @@ class MyApp extends StatelessWidget {
         "login": (context) => const MyLoginPage(),
         "signup": (context) => const MySignUpPage(),
       },
-      home: MyHomePage(),
+      home: MyLoginPage(),
     );
   }
 }
