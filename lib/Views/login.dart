@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firestore_storage_app/Utils/constants.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,26 @@ class MyLoginPage extends StatefulWidget {
 class _MyLoginPageState extends State<MyLoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> loginUserWithEmailAndPassword() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (mounted) {
+        showSnackBar(context, Colors.red, e.message!);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +96,11 @@ class _MyLoginPageState extends State<MyLoginPage> {
                   bottom: 8,
                 ),
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    await loginUserWithEmailAndPassword();
+                    emailController.clear();
+                    passwordController.clear();
+                  },
                   style: ElevatedButton.styleFrom(
                     minimumSize: Size(double.infinity, 50),
                     backgroundColor: Colors.black,
