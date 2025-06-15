@@ -29,6 +29,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> uploadData() async {
     try {
       await FirebaseFirestore.instance.collection("tasks").add({
+        "user": FirebaseAuth.instance.currentUser!.uid,
         "title": titleController.text.trim(),
         "description": descController.text.trim(),
         "date": selectedDate,
@@ -152,12 +153,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           child: ElevatedButton(
                             onPressed: () async {
+                              Navigator.of(context).pop();
                               await uploadData();
                               titleController.clear();
                               descController.clear();
-                              if (mounted) {
-                                Navigator.of(context).pop();
-                              }
                             },
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(double.infinity, 50),
@@ -187,6 +186,17 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             SizedBox(height: 50),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Text(
+                "Hello, ${FirebaseAuth.instance.currentUser?.email}",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
             ElevatedButton(
               onPressed: () async {
                 await signOut();
@@ -210,8 +220,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            FutureBuilder(
-              future: FirebaseFirestore.instance.collection("tasks").get(),
+            StreamBuilder(
+              stream:
+                  FirebaseFirestore.instance
+                      .collection("tasks")
+                      .where(
+                        "user",
+                        isEqualTo: FirebaseAuth.instance.currentUser!.uid,
+                      )
+                      .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -236,7 +253,9 @@ class _MyHomePageState extends State<MyHomePage> {
                               title: Text(
                                 snapshot.data!.docs[index].data()["title"],
                               ),
-                              subtitle: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              subtitle: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     snapshot.data!.docs[index]
