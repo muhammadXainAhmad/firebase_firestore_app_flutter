@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firestore_storage_app/Utils/constants.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,33 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  TextEditingController titleController = TextEditingController();
-  TextEditingController descController = TextEditingController();
-  DateTime selectedDate = DateTime.now();
+  final titleController = TextEditingController();
+  final descController = TextEditingController();
+  String selectedDate = DateTime.now().toString().split(" ").first;
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descController.dispose();
+    super.dispose();
+  }
 
   Future<void> signOut() async {
     await FirebaseAuth.instance.signOut();
+  }
+
+  Future<void> uploadData() async {
+    try {
+      await FirebaseFirestore.instance.collection("tasks").add({
+        "title": titleController.text.trim(),
+        "description": descController.text.trim(),
+        "date": selectedDate,
+      });
+    } catch (e) {
+      if (mounted) {
+        showSnackBar(context, Colors.red, e.toString());
+      }
+    }
   }
 
   @override
@@ -66,7 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
                               );
                               if (pickedDate != null) {
                                 setModalState(() {
-                                  selectedDate = pickedDate;
+                                  selectedDate =
+                                      pickedDate.toString().split(" ").first;
                                 });
                               }
                             },
@@ -90,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             bottom: 8,
                           ),
                           child: TextField(
+                            controller: titleController,
                             maxLines: 2,
                             decoration: InputDecoration(
                               hintText: "Title",
@@ -108,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             bottom: 12,
                           ),
                           child: TextField(
+                            controller: descController,
                             maxLines: 5,
                             decoration: InputDecoration(
                               hintText: "Description",
@@ -126,7 +151,14 @@ class _MyHomePageState extends State<MyHomePage> {
                             bottom: 8,
                           ),
                           child: ElevatedButton(
-                            onPressed: () async {},
+                            onPressed: () async {
+                              await uploadData();
+                              titleController.clear();
+                              descController.clear();
+                              if (mounted) {
+                                Navigator.of(context).pop();
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               minimumSize: Size(double.infinity, 50),
                               backgroundColor: Colors.black,
@@ -135,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                             child: Text(
-                              "SIGN IN",
+                              "SUBMIT",
                               style: TextStyle(color: Colors.white),
                             ),
                           ),
@@ -174,30 +206,62 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: Text("MY TASKS", style: TextStyle(color: Colors.black)),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ListTile(
-                        title: Text("Hello"),
-                        tileColor: Colors.orangeAccent.shade100,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
-                    ),
-                  ],
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            FutureBuilder(
+              future: FirebaseFirestore.instance.collection("tasks").get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (!snapshot.hasData) {
+                  return const Center(child: Text("No Data Found!"));
+                }
+                return Expanded(
+                  child: ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 20,
+                              right: 20,
+                              top: 8,
+                              bottom: 8,
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                snapshot.data!.docs[index].data()["title"],
+                              ),
+                              subtitle: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    snapshot.data!.docs[index]
+                                        .data()["description"],
+                                  ),
+                                  Text(
+                                    snapshot.data!.docs[index].data()["date"],
+                                  ),
+                                ],
+                              ),
+                              tileColor: Colors.orangeAccent.shade100,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 );
               },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
