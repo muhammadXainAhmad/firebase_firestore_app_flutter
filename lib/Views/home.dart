@@ -47,131 +47,138 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModalBottomSheet(
+            isScrollControlled: true,
             context: context,
             builder: (context) {
               return StatefulBuilder(
                 builder: (context, setModalState) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      border: Border(
-                        top: BorderSide(color: Colors.black),
-                        right: BorderSide(color: Colors.black),
-                        left: BorderSide(color: Colors.black),
-                      ),
-                      color: Colors.orangeAccent.shade100,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        topRight: Radius.circular(20),
-                      ),
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      bottom: MediaQuery.of(context).viewInsets.bottom,
                     ),
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Text(
-                            "Add New Task",
-                            style: TextStyle(fontSize: 24),
-                          ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(
+                          top: BorderSide(color: Colors.black),
+                          right: BorderSide(color: Colors.black),
+                          left: BorderSide(color: Colors.black),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 12.0,
-                            right: 12,
-                            bottom: 8,
+                        color: Colors.orangeAccent.shade100,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          topRight: Radius.circular(20),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Text(
+                              "Add New Task",
+                              style: TextStyle(fontSize: 24),
+                            ),
                           ),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              DateTime? pickedDate = await showDatePicker(
-                                context: context,
-                                firstDate: DateTime(2000),
-                                lastDate: DateTime(2050),
-                                initialDate: DateTime.now(),
-                              );
-                              if (pickedDate != null) {
-                                setModalState(() {
-                                  selectedDate =
-                                      pickedDate.toString().split(" ").first;
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12.0,
+                              right: 12,
+                              bottom: 8,
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                DateTime? pickedDate = await showDatePicker(
+                                  context: context,
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2050),
+                                  initialDate: DateTime.now(),
+                                );
+                                if (pickedDate != null) {
+                                  setModalState(() {
+                                    selectedDate =
+                                        pickedDate.toString().split(" ").first;
+                                  });
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(double.infinity, 50),
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                              ),
+                              child: Text(
+                                selectedDate.toString().split(" ").first,
+                                style: TextStyle(color: Colors.black),
                               ),
                             ),
-                            child: Text(
-                              selectedDate.toString().split(" ").first,
-                              style: TextStyle(color: Colors.black),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12.0,
+                              right: 12,
+                              bottom: 8,
                             ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 12.0,
-                            right: 12,
-                            bottom: 8,
-                          ),
-                          child: TextField(
-                            controller: titleController,
-                            maxLines: 2,
-                            decoration: InputDecoration(
-                              hintText: "Title",
-                              hintStyle: TextStyle(color: Colors.black),
-                              fillColor: Colors.white,
-                              filled: true,
-                              enabledBorder: MyConstants.eBorder,
-                              focusedBorder: MyConstants.fBorder,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 12.0,
-                            right: 12,
-                            bottom: 12,
-                          ),
-                          child: TextField(
-                            controller: descController,
-                            maxLines: 5,
-                            decoration: InputDecoration(
-                              hintText: "Description",
-                              hintStyle: TextStyle(color: Colors.black),
-                              fillColor: Colors.white,
-                              filled: true,
-                              enabledBorder: MyConstants.eBorder,
-                              focusedBorder: MyConstants.fBorder,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 12.0,
-                            right: 12,
-                            bottom: 8,
-                          ),
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              Navigator.of(context).pop();
-                              await uploadData();
-                              titleController.clear();
-                              descController.clear();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: Size(double.infinity, 50),
-                              backgroundColor: Colors.black,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
+                            child: TextField(
+                              controller: titleController,
+                              maxLines: 2,
+                              decoration: InputDecoration(
+                                hintText: "Title",
+                                hintStyle: TextStyle(color: Colors.black),
+                                fillColor: Colors.white,
+                                filled: true,
+                                enabledBorder: MyConstants.eBorder,
+                                focusedBorder: MyConstants.fBorder,
                               ),
                             ),
-                            child: Text(
-                              "SUBMIT",
-                              style: TextStyle(color: Colors.white),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12.0,
+                              right: 12,
+                              bottom: 12,
+                            ),
+                            child: TextField(
+                              controller: descController,
+                              maxLines: 5,
+                              decoration: InputDecoration(
+                                hintText: "Description",
+                                hintStyle: TextStyle(color: Colors.black),
+                                fillColor: Colors.white,
+                                filled: true,
+                                enabledBorder: MyConstants.eBorder,
+                                focusedBorder: MyConstants.fBorder,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12.0,
+                              right: 12,
+                              bottom: 8,
+                            ),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await uploadData();
+                                titleController.clear();
+                                descController.clear();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(double.infinity, 50),
+                                backgroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                              child: Text(
+                                "SUBMIT",
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -249,26 +256,54 @@ class _MyHomePageState extends State<MyHomePage> {
                               top: 8,
                               bottom: 8,
                             ),
-                            child: ListTile(
-                              title: Text(
-                                snapshot.data!.docs[index].data()["title"],
-                              ),
-                              subtitle: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    snapshot.data!.docs[index]
-                                        .data()["description"],
+                            child: Dismissible(
+                              key: ValueKey(index),
+                              direction: DismissDirection.endToStart,
+                              background: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 12.0),
+                                    child: Icon(
+                                      Icons.delete,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                  Text(
-                                    snapshot.data!.docs[index].data()["date"],
-                                  ),
-                                ],
+                                ),
                               ),
-                              tileColor: Colors.orangeAccent.shade100,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
+                              onDismissed: (direction) {
+                                if (direction == DismissDirection.endToStart) {
+                                  FirebaseFirestore.instance
+                                      .collection("tasks")
+                                      .doc(snapshot.data!.docs[index].id)
+                                      .delete();
+                                }
+                              },
+                              child: ListTile(
+                                title: Text(
+                                  snapshot.data!.docs[index].data()["title"],
+                                ),
+                                subtitle: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      snapshot.data!.docs[index]
+                                          .data()["description"],
+                                    ),
+                                    Text(
+                                      snapshot.data!.docs[index].data()["date"],
+                                    ),
+                                  ],
+                                ),
+                                tileColor: Colors.orangeAccent.shade100,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
                               ),
                             ),
                           ),
