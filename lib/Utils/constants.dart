@@ -13,7 +13,7 @@ class MyConstants {
 
 void showSnackBar(BuildContext context, Color clr, String text) {
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
+    SnackBar(duration: Duration(seconds: 1),
       content: Text(text, textAlign: TextAlign.center),
       backgroundColor: clr,
       behavior: SnackBarBehavior.floating,

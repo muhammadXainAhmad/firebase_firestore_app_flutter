@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firestore_storage_app/Utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -28,7 +29,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> uploadData() async {
     try {
-      await FirebaseFirestore.instance.collection("tasks").add({
+      final id = const Uuid().v4();
+      // firebase will auto-generate the id
+      // await FirebaseFirestore.instance.collection("tasks").add({
+      await FirebaseFirestore.instance.collection("tasks").doc(id).set({
+        "id": id,
         "user": FirebaseAuth.instance.currentUser!.uid,
         "title": titleController.text.trim(),
         "description": descController.text.trim(),
@@ -276,7 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           bottom: 8,
                         ),
                         child: Dismissible(
-                          key: ValueKey(index),
+                          key: ValueKey(snapshot.data!.docs[index].id),
                           direction: DismissDirection.endToStart,
                           background: Container(
                             decoration: BoxDecoration(
@@ -291,9 +296,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             ),
                           ),
-                          onDismissed: (direction) {
+                          onDismissed: (direction) async {
                             if (direction == DismissDirection.endToStart) {
-                              FirebaseFirestore.instance
+                              showSnackBar(
+                                context,
+                                Colors.red,
+                                "Task Deleted!",
+                              );
+                              await FirebaseFirestore.instance
                                   .collection("tasks")
                                   .doc(snapshot.data!.docs[index].id)
                                   .delete();
