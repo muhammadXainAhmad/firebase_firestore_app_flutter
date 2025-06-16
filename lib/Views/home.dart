@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firestore_storage_app/Utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -15,12 +18,22 @@ class _MyHomePageState extends State<MyHomePage> {
   final titleController = TextEditingController();
   final descController = TextEditingController();
   String selectedDate = DateTime.now().toString().split(" ").first;
+  File? selectedImage;
 
   @override
   void dispose() {
     titleController.dispose();
     descController.dispose();
     super.dispose();
+  }
+
+  void pickImage() async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: ImageSource.gallery);
+    if (picked != null) {
+      selectedImage = File(picked.path);
+      setState(() {});
+    }
   }
 
   Future<void> signOut() async {
@@ -51,155 +64,197 @@ class _MyHomePageState extends State<MyHomePage> {
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border(
-                    top: BorderSide(color: Colors.black),
-                    right: BorderSide(color: Colors.black),
-                    left: BorderSide(color: Colors.black),
-                  ),
-                  color: Colors.orangeAccent.shade100,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
+        return SingleChildScrollView(
+          child: StatefulBuilder(
+            builder: (context, setModalState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Text(
-                        isUpdate ? "Update" : "Add New Task",
-                        style: TextStyle(fontSize: 24),
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: Colors.black),
+                      right: BorderSide(color: Colors.black),
+                      left: BorderSide(color: Colors.black),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12.0,
-                        right: 12,
-                        bottom: 8,
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2050),
-                            initialDate: DateTime.now(),
-                          );
-                          if (pickedDate != null) {
-                            setModalState(() {
-                              selectedDate =
-                                  pickedDate.toString().split(" ").first;
-                            });
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(double.infinity, 50),
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                        ),
+                    color: Colors.orangeAccent.shade100,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(12),
                         child: Text(
-                          selectedDate.toString().split(" ").first,
-                          style: TextStyle(color: Colors.black),
+                          isUpdate ? "Update" : "Add New Task",
+                          style: TextStyle(fontSize: 24),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12.0,
-                        right: 12,
-                        bottom: 8,
-                      ),
-                      child: TextField(
-                        controller: titleController,
-                        maxLines: 2,
-                        decoration: InputDecoration(
-                          hintText: "Title",
-                          hintStyle: TextStyle(color: Colors.black),
-                          fillColor: Colors.white,
-                          filled: true,
-                          enabledBorder: MyConstants.eBorder,
-                          focusedBorder: MyConstants.fBorder,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12.0,
+                          right: 12,
+                          bottom: 8,
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12.0,
-                        right: 12,
-                        bottom: 12,
-                      ),
-                      child: TextField(
-                        controller: descController,
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          hintText: "Description",
-                          hintStyle: TextStyle(color: Colors.black),
-                          fillColor: Colors.white,
-                          filled: true,
-                          enabledBorder: MyConstants.eBorder,
-                          focusedBorder: MyConstants.fBorder,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                        left: 12.0,
-                        right: 12,
-                        bottom: 8,
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          Navigator.of(context).pop();
-                          if (isUpdate) {
-                            FirebaseFirestore.instance
-                                .collection("tasks")
-                                .doc(docId)
-                                .update({
-                                  "title": titleController.text.trim(),
-                                  "description": descController.text.trim(),
-                                  "date": selectedDate,
-                                });
-                            showSnackBar(
-                              context,
-                              Colors.green,
-                              "Task Updated!",
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2050),
+                              initialDate: DateTime.now(),
                             );
-                          } else {
-                            showSnackBar(context, Colors.green, "Task Added!");
-                            await uploadData();
-                          }
-                          titleController.clear();
-                          descController.clear();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: Size(double.infinity, 50),
-                          backgroundColor: Colors.black,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            if (pickedDate != null) {
+                              setModalState(() {
+                                selectedDate =
+                                    pickedDate.toString().split(" ").first;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 10,
+                            minimumSize: Size(double.infinity, 50),
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            selectedDate.toString().split(" ").first,
+                            style: TextStyle(color: Colors.black),
                           ),
                         ),
-                        child: Text(
-                          isUpdate ? "UPDATE" : "SUBMIT",
-                          style: TextStyle(color: Colors.white),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12.0,
+                          right: 12,
+                          bottom: 8,
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            pickImage();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(double.infinity, 50),
+                            elevation: 10,
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: Text(
+                            "Pick Image from Gallery",
+                            style: TextStyle(color: Colors.black),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                      selectedImage == null
+                          ? SizedBox.shrink()
+                          : Padding(
+                            padding: const EdgeInsets.only(
+                              left: 12.0,
+                              right: 12,
+                              bottom: 8,
+                            ),
+                            child: Image.file(selectedImage!),
+                          ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12.0,
+                          right: 12,
+                          bottom: 8,
+                        ),
+                        child: TextField(
+                          controller: titleController,
+                          maxLines: 2,
+                          decoration: InputDecoration(
+                            hintText: "Title",
+                            hintStyle: TextStyle(color: Colors.black),
+                            fillColor: Colors.white,
+                            filled: true,
+                            enabledBorder: MyConstants.eBorder,
+                            focusedBorder: MyConstants.fBorder,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12.0,
+                          right: 12,
+                          bottom: 12,
+                        ),
+                        child: TextField(
+                          controller: descController,
+                          maxLines: 5,
+                          decoration: InputDecoration(
+                            hintText: "Description",
+                            hintStyle: TextStyle(color: Colors.black),
+                            fillColor: Colors.white,
+                            filled: true,
+                            enabledBorder: MyConstants.eBorder,
+                            focusedBorder: MyConstants.fBorder,
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 12.0,
+                          right: 12,
+                          bottom: 8,
+                        ),
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            Navigator.of(context).pop();
+                            if (isUpdate) {
+                              FirebaseFirestore.instance
+                                  .collection("tasks")
+                                  .doc(docId)
+                                  .update({
+                                    "title": titleController.text.trim(),
+                                    "description": descController.text.trim(),
+                                    "date": selectedDate,
+                                  });
+                              showSnackBar(
+                                context,
+                                Colors.green,
+                                "Task Updated!",
+                              );
+                            } else {
+                              showSnackBar(
+                                context,
+                                Colors.green,
+                                "Task Added!",
+                              );
+                              await uploadData();
+                            }
+                            titleController.clear();
+                            descController.clear();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 10,
+                            minimumSize: Size(double.infinity, 50),
+                            backgroundColor: Colors.black,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          child: Text(
+                            isUpdate ? "UPDATE" : "SUBMIT",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );
