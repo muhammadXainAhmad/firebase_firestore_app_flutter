@@ -43,7 +43,7 @@ A simple Flutter app demonstrating **Firebase Firestore** integration with **Ema
 <img src="screenshots/datePicker1.png" width="300"/>
 <img src="screenshots/imagePicker1.png" width="300"/>
 <img src="screenshots/addTask2.png" width="300"/>
-<img src="screenshots/addTask3.png" width="300"/>
+<img src="screenshots/addTask3.png"/>
 <p>
 
 ### **Update Existing Task**
