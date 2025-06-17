@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firestore_storage_app/Views/home.dart';
-import 'package:firestore_storage_app/Views/login.dart';
-import 'package:firestore_storage_app/Views/signup.dart';
-import 'package:firestore_storage_app/firebase_options.dart';
+import 'package:firebase_firestore_app/Views/home.dart';
+import 'package:firebase_firestore_app/Views/login.dart';
+import 'package:firebase_firestore_app/Views/signup.dart';
+import 'package:firebase_firestore_app/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 

@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firestore_storage_app/Utils/constants.dart';
+import 'package:firebase_firestore_app/Utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Padding(
                         padding: const EdgeInsets.all(12),
                         child: Text(
-                          isUpdate ? "Update" : "Add New Task",
+                          isUpdate ? "Update Task" : "Add New Task",
                           style: TextStyle(fontSize: 24),
                         ),
                       ),
