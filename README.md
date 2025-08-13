@@ -3,7 +3,6 @@
 A simple Flutter app demonstrating **Firebase Firestore** integration with **Email & Password Authentication** and full **CRUD operations** for task management.
 
 ## Features ✨
-
 - 🔐 Email & Password Sign Up & Sign In
 - 🔁 Auth State Persistence
 - 📝 Create Task (via Floating Action Button)
