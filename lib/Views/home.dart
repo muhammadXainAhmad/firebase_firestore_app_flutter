@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_firestore_app/Utils/constants.dart';
+import 'package:firebase_firestore_app/notification_services.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -19,6 +20,13 @@ class _MyHomePageState extends State<MyHomePage> {
   final descController = TextEditingController();
   String selectedDate = DateTime.now().toString().split(" ").first;
   File? selectedImage;
+
+  NotificationServices notificationServices = NotificationServices();
+  @override
+  void initState() {
+    super.initState();
+    notificationServices.requestNotificationPermission();
+  }
 
   @override
   void dispose() {
