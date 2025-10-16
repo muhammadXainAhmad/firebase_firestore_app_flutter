@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_firestore_app/Utils/constants.dart';
 import 'package:firebase_firestore_app/notification_services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uuid/uuid.dart';
@@ -26,6 +27,12 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     notificationServices.requestNotificationPermission();
+    notificationServices.onTokenRefresh();
+    notificationServices.getDeviceToken().then((value) {
+      if (kDebugMode) {
+        print("DEVICE TOKEN: $value");
+      }
+    });
   }
 
   @override
