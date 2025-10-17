@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:firebase_firestore_app/Views/notification_screen.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -26,8 +26,34 @@ class NotificationServices {
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: (payload) {},
+      onDidReceiveNotificationResponse: (payload) async {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NotificationScreen()),
+        );
+      },
     );
+  }
+
+  Future<void> messageInteraction(BuildContext context) async {
+    // When app is in background
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      if (context.mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NotificationScreen()),
+        );
+      }
+    });
+
+    // When app is terminated
+    RemoteMessage? initialMessage = await messaging.getInitialMessage();
+    if (initialMessage != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => NotificationScreen()),
+      );
+    }
   }
 
   void firebaseInit(BuildContext context) {
@@ -35,9 +61,12 @@ class NotificationServices {
       if (kDebugMode) {
         print("NOTIFICATION TITLE: ${message.notification!.title.toString()}");
         print("NOTIFICATION BODY: ${message.notification!.body.toString()}");
+        print("NOTIFICATION DATA: ${message.data.toString()}");
       }
       if (Platform.isAndroid && context.mounted) {
         initLocalNotifications(context, message);
+        showNotification(message);
+      } else {
         showNotification(message);
       }
     });
@@ -54,7 +83,7 @@ class NotificationServices {
           channel.id.toString(),
           channel.name.toString(),
           channelDescription: "Channel Description",
-          importance: Importance.high,
+          importance: Importance.max,
           priority: Priority.high,
           ticker: "Ticker",
           icon: "@mipmap/ic_launcher",
@@ -71,14 +100,12 @@ class NotificationServices {
       android: androidNotificationDetails,
       iOS: darwinNotificationDetails,
     );
-    Future.delayed(Duration.zero, () {
-      _flutterLocalNotificationsPlugin.show(
-        1,
-        message.notification!.title.toString(),
-        message.notification!.body.toString(),
-        notificationDetails,
-      );
-    });
+    await _flutterLocalNotificationsPlugin.show(
+      1,
+      message.notification!.title.toString(),
+      message.notification!.body.toString(),
+      notificationDetails,
+    );
   }
 
   void requestNotificationPermission() async {

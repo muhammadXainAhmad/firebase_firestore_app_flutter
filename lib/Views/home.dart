@@ -28,6 +28,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     notificationServices.requestNotificationPermission();
     notificationServices.firebaseInit(context);
+    notificationServices.messageInteraction(context);
     notificationServices.onTokenRefresh();
     notificationServices.getDeviceToken().then((value) {
       if (kDebugMode) {
