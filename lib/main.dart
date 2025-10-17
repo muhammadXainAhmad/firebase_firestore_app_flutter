@@ -4,13 +4,25 @@ import 'package:firebase_firestore_app/Views/home.dart';
 import 'package:firebase_firestore_app/Views/login.dart';
 import 'package:firebase_firestore_app/Views/signup.dart';
 import 'package:firebase_firestore_app/firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+@pragma("vm:entry-point")
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  if (kDebugMode) {
+    print("TITLE: ${message.notification!.title.toString()}");
+    print("BODY: ${message.notification!.body.toString()}");
+  }
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: "assets/.env");
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   runApp(const MyApp());
 }
 

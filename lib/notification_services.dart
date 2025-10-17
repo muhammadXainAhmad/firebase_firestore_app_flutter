@@ -1,4 +1,5 @@
-import 'dart:math';
+import 'dart:io';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -29,20 +30,23 @@ class NotificationServices {
     );
   }
 
-  void firebaseInit() {
+  void firebaseInit(BuildContext context) {
     FirebaseMessaging.onMessage.listen((message) {
       if (kDebugMode) {
         print("NOTIFICATION TITLE: ${message.notification!.title.toString()}");
         print("NOTIFICATION BODY: ${message.notification!.body.toString()}");
       }
-      showNotification(message);
+      if (Platform.isAndroid && context.mounted) {
+        initLocalNotifications(context, message);
+        showNotification(message);
+      }
     });
   }
 
   Future<void> showNotification(RemoteMessage message) async {
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-      Random.secure().nextInt(100000).toString(),
-      "HIGH IMPORTANCE NOTIFICATION",
+      "high_importance_channel",
+      "High Importance Notifications",
       importance: Importance.max,
     );
     AndroidNotificationDetails androidNotificationDetails =
@@ -53,7 +57,7 @@ class NotificationServices {
           importance: Importance.high,
           priority: Priority.high,
           ticker: "Ticker",
-          icon: "@mipmap/ic_launcher"
+          icon: "@mipmap/ic_launcher",
         );
 
     DarwinNotificationDetails darwinNotificationDetails =
