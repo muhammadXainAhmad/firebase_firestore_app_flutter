@@ -48,7 +48,7 @@ class NotificationServices {
 
     // When app is terminated
     RemoteMessage? initialMessage = await messaging.getInitialMessage();
-    if (initialMessage != null) {
+    if (initialMessage != null && context.mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => NotificationScreen()),

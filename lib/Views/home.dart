@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_firestore_app/Utils/constants.dart';
-import 'package:firebase_firestore_app/notification_services.dart';
+import 'package:firebase_firestore_app/Services/notification_services.dart';
+import 'package:firebase_firestore_app/Views/notification_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -299,6 +300,29 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.black,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text(
+                  "NOTIFICATION SCREEN",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
             ),
