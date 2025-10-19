@@ -37,7 +37,7 @@ class FcmService {
     final projectId = dotenv.env['PROJECT_ID'];
 
     if (kDebugMode) {
-      print("accessToken: ${dotenv.env['PROJECT_ID']}");
+      print("Access Token: ${credentials.accessToken.data}");
     }
 
     final url = Uri.parse(
